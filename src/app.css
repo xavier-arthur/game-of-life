@@ -1,0 +1,42 @@
+* { 
+  margin: 0;
+  padding: 0;
+  line-height: 20px;
+  font-family: 'Courier New', Courier, monospace;
+  color: ivory;
+}
+
+body {
+  background-color: #242424;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 1.5em;
+}
+
+.card {
+  color: #242424;
+  margin-top: 1.5em;
+  /* text-align: center; */
+  font-size: small;
+  min-height: 5em;
+  border: 1px solid azure;
+}
+
+.card:hover {
+  transform: scale(1.1);
+}
+
+.is-on {
+  background-color: ivory;
+}
+
+is-off {
+  background-color: #242424;
+}
+
+button {
+  color: #242424;
+}
