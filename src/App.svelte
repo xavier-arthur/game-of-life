@@ -17,9 +17,6 @@
     };
 
     let stepButton;
-    let gridRows;
-    let gridColumns;
-
 </script>
 
 

@@ -18,7 +18,10 @@
         grid = [];
         gridCards = []
 
-        Array.from({ length: columns }).forEach(() => gridCards.push([]));
+        if (rows == 0 || columns == 0)
+            return;
+
+        Array.from({ length: columns * rows }).forEach(() => gridCards.push([]));
 
         for (let i = 0; i < columns; i++) {
             let tmp = [];
@@ -27,6 +30,8 @@
             }
             grid = [...grid, tmp];
         }
+
+        console.log(grid.length);
     }
     
     function toggleCell(i, k) {
@@ -99,20 +104,22 @@
 </script>
 
 <main>
-    {#each grid as cval, i}
-        <div class="grid">
-            {#each cval as kval, k}
-                <div 
-                    class:is-off="{!kval}" 
-                    class:is-on="{kval.state}" class="card" 
-                    bind:this="{gridCards[i][k]}"
-                    style="user-select: none;"
-                    on:mouseup="{() => toggleCell(i, k)}"
-                >
-                <!-- {i+1}x{k+1} -->
-                <!-- {i}x{k} -->
-                </div>
-            {/each}
-        </div>
-    {/each}
+    {#if rows > 0 && columns > 0}
+        {#each grid as cval, i}
+            <div class="grid">
+                {#each cval as kval, k}
+                    <div 
+                        class:is-off="{!kval}" 
+                        class:is-on="{kval.state}" class="card" 
+                        bind:this="{gridCards[i][k]}"
+                        style="user-select: none;"
+                        on:mouseup="{() => toggleCell(i, k)}"
+                    >
+                    <!-- {i+1}x{k+1} -->
+                    <!-- {i}x{k} -->
+                    </div>
+                {/each}
+            </div>
+        {/each}
+    {/if}
 </main>
