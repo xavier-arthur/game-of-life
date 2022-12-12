@@ -19,7 +19,6 @@
     let stepButton;
 </script>
 
-
 <main>
     <span> 
         <input on:change={stepInteval} type="number" placeholder="interval (ms)">
@@ -56,5 +55,20 @@
     .grid-container {
         margin-right: 10em;
         margin-left: 10em;
+    }
+
+    button {
+        background-color: ivory;
+        border: none;
+        border-radius: 5px;
+        padding: .1em;
+    }
+
+    button:active {
+        transform: scale(0.9);
+    }
+
+    h2 {
+        text-shadow: azure 0px 0 10px;
     }
 </style>

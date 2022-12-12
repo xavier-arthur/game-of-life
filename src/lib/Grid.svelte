@@ -30,8 +30,6 @@
             }
             grid = [...grid, tmp];
         }
-
-        console.log(grid.length);
     }
     
     function toggleCell(i, k) {
@@ -66,19 +64,27 @@
         let gridCopy = [...grid];
 
         let neighbors;
-        let toGetAlive    = [];
-        let toDie         = [];
+        let toGetAlive = [];
+        let toDie      = [];
 
-        outer:
         for (let i = 0; i < gridCopy.length; i++) {
             for (let k = 0; k < gridCopy[i].length; k++) {
 
-                neighbors = getNeighboringCells(i, k, gridCopy);
-                let aliveNeighbors    = [];
+                neighbors = getNeighboringCells(i, k, gridCopy[i]);
+
+                // if (gridCopy[i][k].state)
+                //     console.log(neighbors);
+
+
+                let aliveNeighbors = [];
 
                 for (const [row, column] of neighbors) {
-                    if (gridCopy[row][column].state)
-                        aliveNeighbors.push([row, column]);
+                    try {
+                        if (gridCopy[row][column].state)
+                            aliveNeighbors.push([row, column]);
+                    } catch (err) {
+                        // in case of getting a neighbor out of range this catch makes so the error is ignored
+                    }
                 }
 
                 if (gridCopy[i][k].state) {
@@ -115,8 +121,7 @@
                         style="user-select: none;"
                         on:mouseup="{() => toggleCell(i, k)}"
                     >
-                    <!-- {i+1}x{k+1} -->
-                    <!-- {i}x{k} -->
+                        <!-- <span style="font-size: smaller;">{i}x{k}</span> -->
                     </div>
                 {/each}
             </div>
