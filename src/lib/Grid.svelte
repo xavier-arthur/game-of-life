@@ -1,18 +1,35 @@
 <script>
     import Life from './life.js';
+    import { row, column } from './stores.js';
 
     let grid = [];
     let gridCards = [];
 
-    export let size = 10;
+    export let rows = 10;
+    export let columns = 10;
 
-    Array.from({ length: size }).forEach(() => gridCards.push([]));
+    row.subscribe(v => rows = v);
+    column.subscribe(v => columns = v);
 
-    for (let i = 0; i < size; i++) {
-        let tmp = [];
-        for (let k = 0; k < size; k++) 
-            tmp.push(new Life(false));
-        grid = [...grid, tmp];
+    $: rows, buildGrid(); 
+    $: columns, buildGrid();
+        
+    function buildGrid() {
+        grid = [];
+        gridCards = []
+
+        if (rows == 0 || columns == 0)
+            return;
+
+        Array.from({ length: columns * rows }).forEach(() => gridCards.push([]));
+
+        for (let i = 0; i < columns; i++) {
+            let tmp = [];
+            for (let k = 0; k < rows; k++)  {
+                tmp.push(new Life(false));
+            }
+            grid = [...grid, tmp];
+        }
     }
     
     function toggleCell(i, k) {
@@ -43,47 +60,71 @@
         return neighbors;
     }
 
-    function advanceGameState() {
+    export function advanceGameState() {
         let gridCopy = [...grid];
-        let gridCopyIteration = [...grid]
 
         let neighbors;
-        outer:
-        for (let i = 0; i < gridCopyIteration.length; i++) {
-            for (let k = 0; k < gridCopyIteration[i].length; k++) {
-                if (!gridCopyIteration[i][k].state)
-                    continue;
+        let toGetAlive = [];
+        let toDie      = [];
 
-                neighbors = getNeighboringCells(i, k, gridCopyIteration);
+        for (let i = 0; i < gridCopy.length; i++) {
+            for (let k = 0; k < gridCopy[i].length; k++) {
+
+                neighbors = getNeighboringCells(i, k, gridCopy[i]);
+
+                // if (gridCopy[i][k].state)
+                //     console.log(neighbors);
+
+
+                let aliveNeighbors = [];
 
                 for (const [row, column] of neighbors) {
-                    console.log(row, column);
-                    gridCopy[row][column].toggle();
+                    try {
+                        if (gridCopy[row][column].state)
+                            aliveNeighbors.push([row, column]);
+                    } catch (err) {
+                        // in case of getting a neighbor out of range this catch makes so the error is ignored
+                    }
                 }
-                break outer;
+
+                if (gridCopy[i][k].state) {
+                    if (aliveNeighbors.length < 2 || aliveNeighbors.length > 3)
+                        toDie.push([i, k]);
+
+                } else {
+                    // check if the dead cell has three alive neighbors, and 
+                    // if so, make it alive
+
+                    if (aliveNeighbors.length == 3) {
+                        toGetAlive.push([i, k]);
+                    }
+                }
             }
         }
+        toGetAlive.forEach(pair => gridCopy[pair[0]][pair[1]].setToAlive())
+        toDie.forEach(pair => gridCopy[pair[0]][pair[1]].setToDead())
         grid = gridCopy;
     }
+
+    buildGrid();
 </script>
 
 <main>
-    {#each grid as cval, i}
-        <div class="grid">
-            {#each cval as kval, k}
-                <div 
-                    class:is-off="{!kval}" 
-                    class:is-on="{kval.state}" class="card" 
-                    bind:this="{gridCards[i][k]}"
-                    style="user-select: none;"
-                    on:mouseup="{() => toggleCell(i, k)}"
-                >
-                <!-- {i+1}x{k+1} -->
-                {i}x{k}
-                </div>
-            {/each}
-        </div>
-    {/each}
-
-    <button on:mouseup={() => advanceGameState()} type="button">advance</button>
+    {#if rows > 0 && columns > 0}
+        {#each grid as cval, i}
+            <div class="grid">
+                {#each cval as kval, k}
+                    <div 
+                        class:is-off="{!kval}" 
+                        class:is-on="{kval.state}" class="card" 
+                        bind:this="{gridCards[i][k]}"
+                        style="user-select: none;"
+                        on:mouseup="{() => toggleCell(i, k)}"
+                    >
+                        <!-- <span style="font-size: smaller;">{i}x{k}</span> -->
+                    </div>
+                {/each}
+            </div>
+        {/each}
+    {/if}
 </main>
